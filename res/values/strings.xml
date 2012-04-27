@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xternal Display</string>
+    <string name="toggling">Toggling Xternal Display...\nCheck the notification bar.</string>
+    <string name="first_run_title">Xternal Display</string>
+    <string name="first_run_message">Welcome to Xternal Display! Run this app once to toggle HDMI support on, then again to turn it off.\n\nTo switch back to your phone display at any time, just unplug your HDMI cable.</string>
+    <string name="initializing">Initializing...</string>
+    <string name="awaiting_hdmi">HDMI enabled, awaiting connection...</string>
+    <string name="displaying">HDMI active, select to disable</string>
+    <string name="disabled">HDMI output is disabled</string>
+    <string name="error">Error encountered!</string>
+    
+    
+    
+    <string name="failed_init">Failed to initialize! Please restart the application.</string>
+    <string name="hdmi_connected">HDMI detected! Connecting to TV...\nYou should look at your TV now.</string>
+    <string name="not_connected">HDMI cable disconnected! Reconnect to display on TV.</string>
+    <string name="not_displaying">Display failed! Please restart the application.</string>
+    <string name="warning">Important notes:\n1. This application only works on the Motorola Droid X.\n2. When HDMI is connected, your phone\'s built-in screen will not update.\n3. Disconnect the HDMI cable to resume normal phone usage.</string>
+    <string name="enable_wait">Initializing, please wait...</string>
+    <string name="enable">Click to enable HDMI output</string>
+    <string name="disable">Click to disable HDMI output</string>
+    <string name="wrong_device_title">Droid X Required</string>
+    <string name="wrong_device_message">Sorry, this application probably doesn\'t support your phone.</string>
+    <string name="quit">Quit</string>
+    <string name="maybe_it_works">Try anyway</string>
+</resources>
