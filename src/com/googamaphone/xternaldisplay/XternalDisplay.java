@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+@SuppressWarnings("deprecation")
 public class XternalDisplay extends Activity {
     private static final String KEY_FIRST_RUN = "first_run";
 

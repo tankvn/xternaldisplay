@@ -1,17 +1,17 @@
 
 package com.googamaphone.xternaldisplay;
 
-import android.app.Notification;
+import com.googamaphone.utils.WeakReferenceHandler;
+import com.googamaphone.xternaldisplay.ExtDispServiceClient.ExtDispServiceListener;
+import com.googamaphone.xternaldisplay.ExtDispServiceClient.SimpleExtDispServiceListener;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-
-import com.googamaphone.xternaldisplay.ExtDispServiceClient.ExtDispServiceListener;
-import com.googamaphone.xternaldisplay.ExtDispServiceClient.SimpleExtDispServiceListener;
+import android.support.v4.app.NotificationCompat;
 
 public class ConnectionService extends Service {
     public static final String ACTION = "com.googamaphone.xternaldisplay.CONNECTION_SERVICE";
@@ -22,7 +22,7 @@ public class ConnectionService extends Service {
 
     private CharSequence mNotifyTitle;
     private PendingIntent mDisableIntent;
-    private Notification mNotification;
+    private NotificationCompat.Builder mNotificationBuilder;
     private NotificationManager mNotificationManager;
     private ExtDispServiceClient mClient;
     private boolean mConnected;
@@ -30,7 +30,7 @@ public class ConnectionService extends Service {
     private boolean mStarted;
 
     public ConnectionService() {
-        mHandler = new ConnectionHandler();
+        mHandler = new ConnectionHandler(this);
     }
 
     @Override
@@ -42,8 +42,9 @@ public class ConnectionService extends Service {
         mNotifyTitle = getText(R.string.app_name);
         mDisableIntent = PendingIntent.getService(this, 0, new Intent(ACTION), 0);
 
-        mNotification = new Notification(R.drawable.icon, null, System.currentTimeMillis());
-        mNotification.flags |= Notification.FLAG_NO_CLEAR;
+        mNotificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.icon).setOngoing(true).setWhen(0)
+                .setContentIntent(mDisableIntent);
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -52,9 +53,10 @@ public class ConnectionService extends Service {
         mClient.bind();
 
         setStatus(R.string.initializing);
-        startForeground(NOTIFY_STATUS, mNotification);
+        startForeground(NOTIFY_STATUS, mNotificationBuilder.build());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
@@ -80,8 +82,8 @@ public class ConnectionService extends Service {
     private void setStatus(int resId) {
         final CharSequence text = getText(resId);
 
-        mNotification.setLatestEventInfo(this, mNotifyTitle, text, mDisableIntent);
-        mNotificationManager.notify(NOTIFY_STATUS, mNotification);
+        mNotificationBuilder.setContentTitle(mNotifyTitle).setContentText(text);
+        mNotificationManager.notify(NOTIFY_STATUS, mNotificationBuilder.build());
     }
 
     private final ExtDispServiceListener mListener = new SimpleExtDispServiceListener() {
@@ -139,32 +141,36 @@ public class ConnectionService extends Service {
         }
     };
 
-    private class ConnectionHandler extends Handler {
+    private static class ConnectionHandler extends WeakReferenceHandler<ConnectionService> {
         private static final int ENABLE_DETECTION = 1;
         private static final int ENABLE_DISPLAY = 2;
         private static final int DISABLE_DISPLAY = 3;
 
         private static final long DISPLAY_DELAY = 500;
 
-        public void handleMessage(Message msg) {
+        public ConnectionHandler(ConnectionService parent) {
+            super(parent);
+        }
+
+        public void handleMessage(Message msg, ConnectionService parent) {
             switch (msg.what) {
                 case ENABLE_DETECTION:
-                    if (mClient.enableDetection()) {
-                        setStatus(R.string.awaiting_hdmi);
+                    if (parent.mClient.enableDetection()) {
+                        parent.setStatus(R.string.awaiting_hdmi);
                     } else {
-                        setStatus(R.string.error);
+                        parent.setStatus(R.string.error);
                     }
                     break;
                 case ENABLE_DISPLAY:
-                    if (mClient.enableDisplay(null)) {
-                        setStatus(R.string.displaying);
+                    if (parent.mClient.enableDisplay(null)) {
+                        parent.setStatus(R.string.displaying);
                     } else {
-                        setStatus(R.string.error);
+                        parent.setStatus(R.string.error);
                     }
                     break;
                 case DISABLE_DISPLAY:
-                    mClient.disableDisplay();
-                    setStatus(R.string.awaiting_hdmi);
+                    parent.mClient.disableDisplay();
+                    parent.setStatus(R.string.awaiting_hdmi);
                     break;
             }
         }

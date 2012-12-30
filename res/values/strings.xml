@@ -9,4 +9,5 @@
     <string name="displaying">HDMI active, select to disable</string>
     <string name="disabled">HDMI output is disabled</string>
     <string name="error">Error encountered!</string>
+    <string name="permission_manage">Manage external displays</string>
 </resources>
