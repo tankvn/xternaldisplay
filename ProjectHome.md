@@ -1,0 +1,1 @@
+Xternal Display is an Android application that allows users to enable HDMI output on the Droid X.
